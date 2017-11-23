@@ -1,0 +1,19 @@
+Package: hyr
+Type: Package
+Title: R package to command the Hybrid Single Particle Lagrangian Integrated 
+    Trajectory Model (HYSPLIT) with R
+Version: 0.0.12
+Date: 2016-11-23
+Authors@R: person("Stuart", "Grange", email = "s.k.grange@gmail.com", 
+    role = c("cre", "aut"))
+Description: R package to command the Hybrid Single Particle Lagrangian Integrated 
+    Trajectory Model (HYSPLIT) with R
+License: GPL (>= 2)
+ByteCompile: true
+Imports:
+    stringr,
+    lubridate,
+    plyr
+Suggests:
+    openair
+RoxygenNote: 6.0.1
