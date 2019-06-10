@@ -9,8 +9,9 @@
 #' @author Stuart K. Grange
 #' 
 #' @export
-read_hyr <- function(file, verbose = FALSE)
+read_hyr <- function(file, verbose = FALSE) {
   purrr::map_dfr(file, read_hyr_worker, verbose = verbose)
+}
 
 
 read_hyr_worker <- function(file, verbose) {
@@ -21,7 +22,7 @@ read_hyr_worker <- function(file, verbose) {
   text <- readr::read_lines(file)
   
   # Empty files
-  if (length(text) <= 7) return(data_frame())
+  if (length(text) <= 7) return(tibble())
   
   # Where does the header end? 
   to_skip <- grep("PRESSURE", text)
@@ -33,15 +34,13 @@ read_hyr_worker <- function(file, verbose) {
     col_names = FALSE, 
     col_types = readr::cols()
   ) %>% 
-    select(-c(1, 2, 7, 8))
-  
-  # Give names
-  names <- c(
-    "year", "month", "day", "hour", "hours_offset", "latitude", "longitude", 
-    "height", "pressure"
-  )
-  
-  names(df) <- names
+    select(-c(1, 2, 7, 8)) %>% 
+    setNames(
+      c(
+        "year", "month", "day", "hour", "hours_offset", "latitude", "longitude", 
+        "height", "pressure"
+      )
+    )
   
   # Clean up dates and format return
   df <- df %>% 

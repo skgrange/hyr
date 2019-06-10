@@ -1,6 +1,7 @@
 #' Pseudo-function to re-export base R's functions.
 #' 
-#' @importFrom utils read.table write.table menu
+#' @importFrom utils read.table write.table menu head
+#' @importFrom stats setNames
 NULL
 
 

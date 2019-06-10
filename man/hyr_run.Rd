@@ -9,7 +9,7 @@ hyr_run(df, directory_exec = "exec/", directory_input, directory_output,
   verbose = TRUE)
 }
 \arguments{
-\item{df}{Data}
+\item{df}{Data frame which contains a set of variables.}
 
 \item{directory_exec}{Location of HYSPLIT's executable files. Ensure executable
 permisions have been set for the \code{hyts_std} application if on a Unix 
@@ -19,14 +19,14 @@ also need to be in the correct location.}
 \item{directory_input}{Location of input meteorological files for HYSPLIT.}
 
 \item{directory_output}{Location of where HYSPLIT should write its trajectory 
-outputs while working.}
+outputs to.}
 
 \item{verbose}{Should the function give messages on what trajectory is being
 processed.}
 }
 \description{
-\code{run_hysplit} will return a data frame which is ready for use in 
-\strong{openair}'s \code{traj*} functions.
+Function to command HYSPLIT (Hybrid Single Particle Lagrangian Integrated 
+Trajectory Model) from R.
 }
 \seealso{
 \code{\link[openair]{importTraj}}, \code{\link[openair]{trajPlot}}, 
