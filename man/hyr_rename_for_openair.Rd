@@ -2,20 +2,23 @@
 % Please edit documentation in R/hyr_rename_for_openair.R
 \name{hyr_rename_for_openair}
 \alias{hyr_rename_for_openair}
-\title{Function to rename variables in a data frame containing trajectory data for
-use in \strong{openair}.}
+\title{Function to rename variables in a tibble created by \code{\link{read_hyr}} to
+enable immediate use with \strong{openair}.}
 \usage{
 hyr_rename_for_openair(df)
 }
 \arguments{
-\item{df}{Data frame from \code{\link{read_hyr}}.}
+\item{df}{Tibble from \code{\link{read_hyr}}.}
 }
 \value{
 Tibble.
 }
 \description{
-Function to rename variables in a data frame containing trajectory data for
-use in \strong{openair}.
+Function to rename variables in a tibble created by \code{\link{read_hyr}} to
+enable immediate use with \strong{openair}.
+}
+\seealso{
+\code{\link{read_hyr}}
 }
 \author{
 Stuart K. Grange

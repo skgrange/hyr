@@ -1,25 +1,48 @@
 #' Function to command HYSPLIT (Hybrid Single Particle Lagrangian Integrated 
 #' Trajectory Model) from R. 
 #' 
-#' @param df Data frame which contains a set of variables. 
+#' @param df Data frame/tibble which contains a set of variables. See examples 
+#' for an example of what variables need to be included. 
 #' 
 #' @param directory_exec Location of HYSPLIT's executable files. Ensure executable
-#' permisions have been set for the \code{hyts_std} application if on a Unix 
-#' system. HYSPLIT's \code{bdyfiles} directory with the \code{ASCDATA.CFG} will
-#' also need to be in the correct location. 
+#' permissions have been set for the \code{hyts_std} application if on a Unix 
+#' system. 
 #' 
 #' @param directory_input Location of input meteorological files for HYSPLIT. 
 #' 
 #' @param directory_output Location of where HYSPLIT should write its trajectory 
 #' outputs to. 
 #' 
-#' @param verbose Should the function give messages on what trajectory is being
-#' processed. 
+#' @param verbose Should the function give messages?
 #' 
 #' @seealso \code{\link[openair]{importTraj}}, \code{\link[openair]{trajPlot}}, 
-#' \href{http://ready.arl.noaa.gov/HYSPLIT.php}{HYSPLIT home}
+#' \href{http://ready.arl.noaa.gov/HYSPLIT.php}{HYSPLIT home}, 
+#' \code{\link{read_hyr}}
 #' 
 #' @author Stuart K. Grange
+#' 
+#' @examples 
+#' 
+#' \dontrun{
+#' 
+#' # Create a tibble with all the things the hyr_run function requires
+#' data_receptor <- tribble(
+#'   ~latitude, ~longitude, ~runtime, ~interval, ~start_height, ~model_height, ~start, ~end,            
+#'   36.150735, -5.349437, -120, "24 hour", 10, 10000, "2018-06-25", "2018-07-02"
+#'   ) %>%
+#'  mutate(start = as.POSIXct(start),
+#'         end = as.POSIXct(end))
+#'       
+#' # Run hysplit, directories will be different on your system
+#' hyr_run(
+#'   data_receptor,
+#'   directory_exec = "~/programmes/hysplit/trunk/exec",
+#'   directory_input = "/media/storage/data/hysplit",
+#'   directory_output = "~/Desktop/hysplit_outputs",
+#'   verbose = TRUE
+#' )
+#'
+#' }
 #' 
 #' @export
 hyr_run <- function(df, directory_exec = "exec/", directory_input, 
@@ -65,7 +88,7 @@ hyr_run <- function(df, directory_exec = "exec/", directory_input,
   date_sequence <- seq(df$start, df$end, by = df$interval)
   
   if (verbose) {
-    message(date_message(), "Running ", length(date_sequence), " HYSPLIT trajectories...")
+    message(date_message(), length(date_sequence), " HYSPLIT trajectories to be run...")
   }
   
   # Apply function which runs the model multiple times
@@ -99,7 +122,12 @@ hyr_run_worker <- function(date, directory_exec, directory_input,
                            model_height, verbose) {
   
   # Message to user
-  if (verbose) message(date_message(), format(date, "%Y-%m-%d %H:%M:%S"), "...")
+  if (verbose) {
+    message(
+      date_message(), 
+      "Calculating trajectory starting at ", format(date, "%Y-%m-%d %H:%M:%S"), "..."
+    )
+  }
   
   # Get pieces of the date
   date_year <- year(date)
