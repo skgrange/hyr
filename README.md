@@ -1,5 +1,7 @@
 # **hyr**
 
+[![Build Status](https://travis-ci.org/skgrange/hyr.svg?branch=master)](https://travis-ci.org/skgrange/hyr)
+
 **hyr** is an R package to command the [Hybrid Single Particle Lagrangian Integrated Trajectory Model (HYSPLIT)](https://www.ready.noaa.gov/HYSPLIT.php) with R. 
 
 # Installation
