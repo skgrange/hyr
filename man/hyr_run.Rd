@@ -5,8 +5,14 @@
 \title{Function to command HYSPLIT (Hybrid Single Particle Lagrangian Integrated 
 Trajectory Model) from R.}
 \usage{
-hyr_run(df, directory_exec = "exec/", directory_input, directory_output,
-  verbose = TRUE)
+hyr_run(
+  df,
+  directory_exec = "exec/",
+  directory_input,
+  directory_output,
+  verbose = FALSE,
+  progress = FALSE
+)
 }
 \arguments{
 \item{df}{Data frame/tibble which contains a set of variables. See examples 
@@ -22,6 +28,8 @@ system.}
 outputs to.}
 
 \item{verbose}{Should the function give messages?}
+
+\item{progress}{Should a progress bar be displayed?}
 }
 \description{
 Function to command HYSPLIT (Hybrid Single Particle Lagrangian Integrated 

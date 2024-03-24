@@ -15,6 +15,8 @@
 #' 
 #' @param verbose Should the function give messages?
 #' 
+#' @param progress Should a progress bar be displayed? 
+#' 
 #' @seealso \code{\link[openair]{importTraj}}, \code{\link[openair]{trajPlot}}, 
 #' \href{http://ready.arl.noaa.gov/HYSPLIT.php}{HYSPLIT home}, 
 #' \code{\link{read_hyr}}
@@ -46,7 +48,7 @@
 #' 
 #' @export
 hyr_run <- function(df, directory_exec = "exec/", directory_input, 
-                    directory_output, verbose = TRUE) {
+                    directory_output, verbose = FALSE, progress = FALSE) {
   
   # Parse arguments
   # Expand paths
@@ -61,17 +63,16 @@ hyr_run <- function(df, directory_exec = "exec/", directory_input,
   
   # Check if source directory exists, often not because of external drive use
   if (!dir.exists(directory_input)) {
-    stop("`directory_input` does not exist...", call. = FALSE)
+    cli::cli_abort("`directory_input` does not exist.")
   }
   
-  # Check for
+  # Check for output directory and create if desired
   if (!fs::dir_exists(directory_output)) {
-    message(date_message(), directory_output, " does not exist, create it?")
+    cli::cli_alert_info("{cli_date()} {directory_output} does not exist, should it be created?")
     if (menu(choices = c("Yes", "No")) == 1) {
       fs::dir_create(directory_output, recursive = TRUE)
-      message(date_message(), directory_output, " created...")
+      cli::cli_alert_info("{cli_date()} {directory_output} has been created...")
     }
-    
   }
   
   # Receptor location and starting height
@@ -80,15 +81,18 @@ hyr_run <- function(df, directory_exec = "exec/", directory_input,
   # Set up where the control file is to be written
   control_file <- fs::path(directory_exec, "CONTROL")
   
-  # Store working directory because this will be changed
+  # Store working directory because this will be changed when calling the 
+  # programme
   directory_current_working <- getwd()
   
   # Create date sequence
   if (df$interval == "3 hour") df$end <- df$end + hours(21)
   date_sequence <- seq(df$start, df$end, by = df$interval)
   
-  if (verbose) {
-    message(date_message(), length(date_sequence), " HYSPLIT trajectories to be run...")
+  if (verbose | progress) {
+    cli::cli_alert_info(
+      "{cli_date()} {length(date_sequence)} HYSPLIT trajectories to be run..."
+    )
   }
   
   # Apply function which runs the model multiple times
@@ -102,30 +106,28 @@ hyr_run <- function(df, directory_exec = "exec/", directory_input,
     coordinates = coordinates, 
     runtime = df$runtime, 
     model_height = df$model_height, 
-    verbose = verbose
+    verbose = verbose,
+    .progress = progress
   )
   
   # Change working directory back to original after system calls
   setwd(directory_current_working)
   
-  # No return
+  return(invisible(df))
   
 }
 
 
 # Define the function which creates a control file and calls the hy_std 
 # application. 
-# 
-# No export
 hyr_run_worker <- function(date, directory_exec, directory_input, 
                            directory_output, control_file, coordinates, runtime, 
                            model_height, verbose) {
   
   # Message to user
   if (verbose) {
-    message(
-      date_message(), 
-      "Calculating trajectory starting at ", format(date, "%Y-%m-%d %H:%M:%S"), "..."
+    cli::cli_alert_info(
+      "{cli_date()} Calculating trajectory starting at {format(date, '%Y-%m-%d %H:%M:%S')}..."
     )
   }
   
@@ -145,7 +147,7 @@ hyr_run_worker <- function(date, directory_exec, directory_input,
   
   # Use date to create a file name
   file_name_export <- str_c(
-    str_replace_all(date_control, " ", ""), 
+    str_remove_all(date_control, " "), 
     "_hyr_output.txt"
   )
   
@@ -201,15 +203,13 @@ hyr_run_worker <- function(date, directory_exec, directory_input,
   # Output file
   write_to_control_file(control_file, file_name_export)
   
-  # cat("\n", readLines(control_file))
-  
   # Change working directory to hysplit application
   setwd(directory_exec)
   
   # System call to run hysplit
-  processx::run("./hyts_std", spinner = TRUE)
+  list_run <- processx::run("./hyts_std")
   
-  # No return
+  return(invisible(list_run))
   
 }
 
@@ -235,7 +235,6 @@ get_year_and_month <-  function(pattern, difference = 1) {
 # Write table function
 write_to_control_file <- function(file, x, append = TRUE) {
   
-  # Write to file
   write.table(
     x, 
     file, 

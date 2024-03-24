@@ -4,12 +4,14 @@
 \alias{read_hyr}
 \title{Function to load HYSPLIT data files produced with \code{\link{hyr_run}}.}
 \usage{
-read_hyr(file, verbose = FALSE)
+read_hyr(file, verbose = FALSE, progress = FALSE)
 }
 \arguments{
 \item{file}{Vector of file names produced by \code{\link{hyr_run}}.}
 
 \item{verbose}{Should the function give messages?}
+
+\item{progress}{Should a progress bar be displayed?}
 }
 \value{
 Tibble.
